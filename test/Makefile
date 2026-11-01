@@ -6,7 +6,19 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v
+PROJECT_SOURCES = tt_um_yodalee_tinyaes.v \
+  AddRoundKey.sv \
+  AesCore.sv \
+  Aes_pkg.sv \
+  AesState.sv \
+  AesTop.sv \
+  ControlFsm.sv \
+  EnableFF.sv \
+  KeyExpansion.sv \
+  MixColumn.sv \
+  MuxEnableFF.sv \
+  RcLUT.sv \
+  SboxArish.sv
 
 ifneq ($(GATES),yes)
 
@@ -17,7 +29,7 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 else
 
 # Gate level simulation:
-SIM_BUILD				= sim_build/gl
+SIM_BUILD		= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DUSE_POWER_PINS
