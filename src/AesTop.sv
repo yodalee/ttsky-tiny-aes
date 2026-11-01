@@ -1,0 +1,89 @@
+
+// AesTop.sv
+//
+// The module that instantiates the submodule and connect them together
+
+module AesTop (
+    input clk,
+    input rst_n,
+    // CSR
+    input        r_dec,
+    input [1:0]  r_level,
+    /// Data input
+    input        i_valid,
+    output logic i_ready,
+    input byte   i_data,
+    // Data output
+    output logic o_valid,
+    input        o_ready,
+    output byte  o_data
+);
+
+logic c_stateen;
+logic c_srow0, c_srow1, c_srow2;
+logic c_isrow0, c_isrow1, c_mixcol;
+logic c_loadkey, c_keyen;
+logic c_ke0, c_ke1, c_ke2, c_kxor;
+logic [4:0] c_ikxor;
+logic [1:0] c_dec192_keysel;
+logic c_add, c_sbox, c_keyexpansion;
+byte core_data;
+
+assign c_keyexpansion = c_ke0 | c_ke1 | c_ke2;
+
+ControlFsm i_control_fsm (
+    .clk(clk),
+    .rst_n(rst_n),
+    .r_dec(r_dec),
+    .r_level(r_level),
+    .i_valid(i_valid),
+    .i_ready(i_ready),
+    .o_ready(o_ready),
+    .o_valid(o_valid),
+    .c_srow0(c_srow0),
+    .c_srow1(c_srow1),
+    .c_srow2(c_srow2),
+    .c_isrow0(c_isrow0),
+    .c_isrow1(c_isrow1),
+    .c_mixcol(c_mixcol),
+    .c_stateen(c_stateen),
+    .c_loadkey(c_loadkey),
+    .c_keyen(c_keyen),
+    .c_ke0(c_ke0),
+    .c_ke1(c_ke1),
+    .c_ke2(c_ke2),
+    .c_kxor(c_kxor),
+    .c_ikxor(c_ikxor),
+    .c_dec192_keysel(c_dec192_keysel),
+    .c_add(c_add),
+    .c_sbox(c_sbox)
+);
+
+AesCore i_aes_core (
+    .clk(clk),
+    .rst_n(rst_n),
+    .r_dec(r_dec),
+    .r_level(r_level),
+    .c_stateen(c_stateen),
+    .c_srow0(c_srow0),
+    .c_srow1(c_srow1),
+    .c_srow2(c_srow2),
+    .c_isrow0(c_isrow0),
+    .c_isrow1(c_isrow1),
+    .c_mixcol(c_mixcol),
+    .c_loadkey(c_loadkey),
+    .c_keyen(c_keyen),
+    .c_ke0(c_ke0),
+    .c_ke1(c_ke1),
+    .c_ke2(c_ke2),
+    .c_kxor(c_kxor),
+    .c_ikxor(c_ikxor),
+    .c_dec192_keysel(c_dec192_keysel),
+    .c_add(c_add),
+    .c_sbox(c_sbox),
+    .c_keyexpansion(c_keyexpansion),
+    .i_data(i_data),
+    .o_data(o_data)
+);
+
+endmodule
