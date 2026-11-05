@@ -7,18 +7,17 @@ FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = tt_um_yodalee_tinyaes.v \
-  AddRoundKey.sv \
-  AesCore.sv \
-  Aes_pkg.sv \
-  AesState.sv \
-  AesTop.sv \
-  ControlFsm.sv \
-  EnableFF.sv \
-  KeyExpansion.sv \
-  MixColumn.sv \
-  MuxEnableFF.sv \
-  RcLUT.sv \
-  SboxArish.sv
+  AddRoundKey.v \
+  AesCore.v \
+  AesState.v \
+  AesTop.v \
+  ControlFsm.v \
+  EnableFF.v \
+  KeyExpansion.v \
+  MixColumn.v \
+  MuxEnableFF.v \
+  RcLUT.v \
+  SboxArish.v
 
 ifneq ($(GATES),yes)
 
