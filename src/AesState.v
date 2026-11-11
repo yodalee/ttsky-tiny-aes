@@ -2,11 +2,7 @@ module AesState (
 	clk,
 	rst_n,
 	c_en,
-	c_srow0,
-	c_srow1,
-	c_srow2,
-	c_isrow0,
-	c_isrow1,
+	c_srow,
 	c_mixcol,
 	i_state,
 	o_state
@@ -14,11 +10,7 @@ module AesState (
 	input clk;
 	input rst_n;
 	input c_en;
-	input c_srow0;
-	input c_srow1;
-	input c_srow2;
-	input c_isrow0;
-	input c_isrow1;
+	input [2:0] c_srow;
 	input c_mixcol;
 	input wire signed [7:0] i_state;
 	output wire signed [7:0] o_state;
@@ -47,11 +39,11 @@ module AesState (
 	wire enrow2;
 	wire enrow3;
 	assign enrow0 = c_en | c_mixcol;
-	assign enrow1 = (((c_en | c_mixcol) | c_srow0) | c_isrow0) | c_isrow1;
-	assign enrow2 = (((c_en | c_mixcol) | c_srow0) | c_srow1) | c_isrow1;
-	assign enrow3 = (((c_en | c_mixcol) | c_srow0) | c_srow1) | c_srow2;
+	assign enrow1 = (c_en | c_mixcol) | c_srow[0];
+	assign enrow2 = (c_en | c_mixcol) | c_srow[1];
+	assign enrow3 = (c_en | c_mixcol) | c_srow[2];
 	wire sel_row;
-	assign sel_row = ((((c_srow0 | c_srow1) | c_srow2) | c_isrow0) | c_isrow1) | c_mixcol;
+	assign sel_row = |c_srow | c_mixcol;
 	MuxEnableFF i_state00(
 		.clk(clk),
 		.rst_n(rst_n),

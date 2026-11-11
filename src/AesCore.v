@@ -4,11 +4,7 @@ module AesCore (
 	r_dec,
 	r_level,
 	c_stateen,
-	c_srow0,
-	c_srow1,
-	c_srow2,
-	c_isrow0,
-	c_isrow1,
+	c_srow,
 	c_mixcol,
 	c_loadkey,
 	c_keyen,
@@ -30,11 +26,7 @@ module AesCore (
 	input r_dec;
 	input [1:0] r_level;
 	input c_stateen;
-	input c_srow0;
-	input c_srow1;
-	input c_srow2;
-	input c_isrow0;
-	input c_isrow1;
+	input [2:0] c_srow;
 	input c_mixcol;
 	input c_loadkey;
 	input c_keyen;
@@ -63,11 +55,7 @@ module AesCore (
 		.clk(clk),
 		.rst_n(rst_n),
 		.c_en(c_stateen),
-		.c_srow0(c_srow0),
-		.c_srow1(c_srow1),
-		.c_srow2(c_srow2),
-		.c_isrow0(c_isrow0),
-		.c_isrow1(c_isrow1),
+		.c_srow(c_srow),
 		.c_mixcol(c_mixcol),
 		.i_state(i_state),
 		.o_state(state_data)
@@ -108,8 +96,6 @@ module AesCore (
 	wire signed [7:0] i_sboxkey;
 	assign i_sboxkey = (c_ke2 ? key70 : key71);
 	AddRoundKey i_add_round_key(
-		.clk(clk),
-		.rst_n(rst_n),
 		.r_dec(r_dec),
 		.c_add(c_add),
 		.c_sbox(c_sbox),

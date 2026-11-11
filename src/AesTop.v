@@ -8,7 +8,8 @@ module AesTop (
 	i_data,
 	o_valid,
 	o_ready,
-	o_data
+	o_data,
+	d_state
 );
 	input clk;
 	input rst_n;
@@ -20,12 +21,9 @@ module AesTop (
 	output wire o_valid;
 	input o_ready;
 	output wire signed [7:0] o_data;
+	output wire [4:0] d_state;
 	wire c_stateen;
-	wire c_srow0;
-	wire c_srow1;
-	wire c_srow2;
-	wire c_isrow0;
-	wire c_isrow1;
+	wire [2:0] c_srow;
 	wire c_mixcol;
 	wire c_loadkey;
 	wire c_keyen;
@@ -38,7 +36,6 @@ module AesTop (
 	wire c_add;
 	wire c_sbox;
 	wire c_keyexpansion;
-	wire signed [7:0] core_data;
 	assign c_keyexpansion = (c_ke0 | c_ke1) | c_ke2;
 	ControlFsm i_control_fsm(
 		.clk(clk),
@@ -49,11 +46,8 @@ module AesTop (
 		.i_ready(i_ready),
 		.o_ready(o_ready),
 		.o_valid(o_valid),
-		.c_srow0(c_srow0),
-		.c_srow1(c_srow1),
-		.c_srow2(c_srow2),
-		.c_isrow0(c_isrow0),
-		.c_isrow1(c_isrow1),
+		.d_state(d_state),
+		.c_srow(c_srow),
 		.c_mixcol(c_mixcol),
 		.c_stateen(c_stateen),
 		.c_loadkey(c_loadkey),
@@ -73,11 +67,7 @@ module AesTop (
 		.r_dec(r_dec),
 		.r_level(r_level),
 		.c_stateen(c_stateen),
-		.c_srow0(c_srow0),
-		.c_srow1(c_srow1),
-		.c_srow2(c_srow2),
-		.c_isrow0(c_isrow0),
-		.c_isrow1(c_isrow1),
+		.c_srow(c_srow),
 		.c_mixcol(c_mixcol),
 		.c_loadkey(c_loadkey),
 		.c_keyen(c_keyen),

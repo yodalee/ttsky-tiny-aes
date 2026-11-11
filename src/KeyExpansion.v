@@ -44,12 +44,10 @@ module KeyExpansion (
 	wire signed [7:0] rc_data;
 	wire is128;
 	wire is192;
-	wire is256;
 	localparam kLevel128 = 2'b00;
 	assign is128 = r_level == kLevel128;
 	localparam kLevel192 = 2'b01;
 	assign is192 = r_level == kLevel192;
-	assign is256 = r_level[1] == 1'b1;
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n)
 			c_rc_idx <= 1'sb0;

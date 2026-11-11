@@ -1,6 +1,4 @@
 module AddRoundKey (
-	clk,
-	rst_n,
 	r_dec,
 	c_add,
 	c_sbox,
@@ -11,8 +9,6 @@ module AddRoundKey (
 	o_key,
 	o_state
 );
-	input wire clk;
-	input wire rst_n;
 	input r_dec;
 	input c_add;
 	input c_sbox;
