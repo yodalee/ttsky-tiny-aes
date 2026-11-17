@@ -12,6 +12,10 @@ PROJECT_SOURCES = tt_um_yodalee_tinyaes.v \
   AesState.v \
   AesTop.v \
   ControlFsm.v \
+  ControlAdd.v \
+  ControlKeyExpand.v \
+  ControlMixColumn.v \
+  ControlShiftrow.v \
   EnableFF.v \
   KeyExpansion.v \
   MixColumn.v \

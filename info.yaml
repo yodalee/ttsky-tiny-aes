@@ -22,7 +22,11 @@ project:
     - AesCore.v
     - AesState.v
     - AesTop.v
+    - ControlAdd.v
     - ControlFsm.v
+    - ControlKeyExpand.v
+    - ControlMixColumn.v
+    - ControlShiftrow.v
     - EnableFF.v
     - KeyExpansion.v
     - MixColumn.v
