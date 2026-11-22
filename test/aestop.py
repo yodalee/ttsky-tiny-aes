@@ -6,7 +6,7 @@
 Pin map:
     ui_in[0]       rising edge: submit the byte currently on uio_in
     ui_in[1]       rising edge: accept the byte currently on uio_out
-    ui_in[6]       decrypt select
+    ui_in[7:6]     AES mode (00/01 encrypt, 10/11 decrypt)
     ui_in[5:4]     AES key size (00/01/10 = 128/192/256 bits)
     uo_out[0]      input ready
     uo_out[1]      output valid
@@ -46,10 +46,10 @@ def pin(value):
     return int(value)
 
 
-async def reset(dut, decrypt, key_length):
+async def reset(dut, r_dec, key_length):
     """Reset the wrapper and program static AES configuration pins."""
     dut.ena.value = 1
-    dut.ui_in.value = (int(decrypt) << 6) | (KEY_LEVEL[key_length] << 4)
+    dut.ui_in.value = (r_dec << 6) | (KEY_LEVEL[key_length] << 4)
     dut.uio_in.value = 0
     dut.rst_n.value = 0
     await RisingEdge(dut.clk)
@@ -105,24 +105,29 @@ async def receive_byte(dut, config):
     return value
 
 
-async def run_aes(dut, decrypt, input_bytes, key_bytes):
-    config = (int(decrypt) << 6) | (KEY_LEVEL[len(key_bytes)] << 4)
-    await reset(dut, decrypt, len(key_bytes))
+async def run_aes(dut, r_dec, input_bytes, key_bytes):
+    config = (r_dec << 6) | (KEY_LEVEL[len(key_bytes)] << 4)
+    await reset(dut, r_dec, len(key_bytes))
     for value in input_bytes + key_bytes:
         await send_byte(dut, config, value)
     return bytes([await receive_byte(dut, config) for _ in range(16)])
 
 
-async def check_aes(dut, decrypt, key_length):
+async def check_aes(dut, r_dec, key_length):
+    decrypt = bool(r_dec & 0b10)
     if decrypt:
         input_bytes = EXPECTED[key_length]
-        key_bytes = DECRYPTION_KEY_STATE[key_length]
+        key_bytes = (
+            DECRYPTION_KEY_STATE[key_length]
+            if r_dec == 0b10
+            else bytes(range(key_length))
+        )
         expected = DATA
     else:
         input_bytes = DATA
         key_bytes = bytes(range(key_length))
         expected = EXPECTED[key_length]
-    actual = await run_aes(dut, decrypt, input_bytes, key_bytes)
+    actual = await run_aes(dut, r_dec, input_bytes, key_bytes)
     direction = "decrypt" if decrypt else "encrypt"
     assert actual == expected, (
         f"AES-{key_length * 8} {direction} returned {actual.hex()}, "
@@ -133,34 +138,58 @@ async def check_aes(dut, decrypt, key_length):
 @cocotb.test()
 async def test_aes128_encrypt(dut):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    await check_aes(dut, decrypt=False, key_length=16)
+    await check_aes(dut, r_dec=0b00, key_length=16)
 
 
 @cocotb.test()
 async def test_aes192_encrypt(dut):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    await check_aes(dut, decrypt=False, key_length=24)
+    await check_aes(dut, r_dec=0b00, key_length=24)
 
 
 @cocotb.test()
 async def test_aes256_encrypt(dut):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    await check_aes(dut, decrypt=False, key_length=32)
+    await check_aes(dut, r_dec=0b00, key_length=32)
 
 
 @cocotb.test()
 async def test_aes128_decrypt(dut):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    await check_aes(dut, decrypt=True, key_length=16)
+    await check_aes(dut, r_dec=0b10, key_length=16)
 
 
 @cocotb.test()
 async def test_aes192_decrypt(dut):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    await check_aes(dut, decrypt=True, key_length=24)
+    await check_aes(dut, r_dec=0b10, key_length=24)
 
 
 @cocotb.test()
 async def test_aes256_decrypt(dut):
     cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
-    await check_aes(dut, decrypt=True, key_length=32)
+    await check_aes(dut, r_dec=0b10, key_length=32)
+
+
+@cocotb.test()
+async def test_aes128_encrypt_mode_01(dut):
+    cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
+    await check_aes(dut, r_dec=0b01, key_length=16)
+
+
+@cocotb.test()
+async def test_aes128_decrypt_first_round_key(dut):
+    cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
+    await check_aes(dut, r_dec=0b11, key_length=16)
+
+
+@cocotb.test()
+async def test_aes192_decrypt_first_round_key(dut):
+    cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
+    await check_aes(dut, r_dec=0b11, key_length=24)
+
+
+@cocotb.test()
+async def test_aes256_decrypt_first_round_key(dut):
+    cocotb.start_soon(Clock(dut.clk, 10, unit="ns").start())
+    await check_aes(dut, r_dec=0b11, key_length=32)

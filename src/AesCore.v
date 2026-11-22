@@ -12,6 +12,7 @@ module AesCore (
 	c_ke1,
 	c_ke2,
 	c_kxor,
+	c_resetrc,
 	c_ikxor,
 	c_dec192_keysel,
 	c_add,
@@ -23,7 +24,7 @@ module AesCore (
 	reg _sv2v_0;
 	input clk;
 	input rst_n;
-	input r_dec;
+	input [1:0] r_dec;
 	input [1:0] r_level;
 	input c_stateen;
 	input [2:0] c_srow;
@@ -34,6 +35,7 @@ module AesCore (
 	input c_ke1;
 	input c_ke2;
 	input c_kxor;
+	input c_resetrc;
 	input [4:0] c_ikxor;
 	input [1:0] c_dec192_keysel;
 	input c_add;
@@ -83,6 +85,7 @@ module AesCore (
 		.c_ke1(c_ke1),
 		.c_ke2(c_ke2),
 		.c_kxor(c_kxor),
+		.c_resetrc(c_resetrc),
 		.c_ikxor(c_ikxor),
 		.c_dec192_keysel(c_dec192_keysel),
 		.i_key(i_roundkey),
@@ -96,7 +99,7 @@ module AesCore (
 	wire signed [7:0] i_sboxkey;
 	assign i_sboxkey = (c_ke2 ? key70 : key71);
 	AddRoundKey i_add_round_key(
-		.r_dec(r_dec),
+		.r_dec(r_dec[1]),
 		.c_add(c_add),
 		.c_sbox(c_sbox),
 		.c_keyexpansion(c_keyexpansion),

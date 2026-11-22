@@ -7,7 +7,6 @@ module SboxArish (
 	input wire [7:0] i_data;
 	output wire [7:0] o_data;
 	localparam [1:0] ETA = 2'b01;
-	localparam [3:0] NU = 4'b0010;
 	function automatic [15:0] rebase_in;
 		input reg [7:0] n;
 		begin
@@ -140,9 +139,6 @@ module SboxArish (
 	function automatic [3:0] g17;
 		input reg [3:0] a;
 		input reg [3:0] b;
-		reg [3:0] c;
-		reg [3:0] d;
-		reg [3:0] sqr;
 		reg a32;
 		reg b32;
 		reg a31;

@@ -13,7 +13,7 @@ module AesTop (
 );
 	input clk;
 	input rst_n;
-	input r_dec;
+	input [1:0] r_dec;
 	input [1:0] r_level;
 	input i_valid;
 	output wire i_ready;
@@ -31,6 +31,7 @@ module AesTop (
 	wire c_ke1;
 	wire c_ke2;
 	wire c_kxor;
+	wire c_resetrc;
 	wire [4:0] c_ikxor;
 	wire [1:0] c_dec192_keysel;
 	wire c_add;
@@ -56,6 +57,7 @@ module AesTop (
 		.c_ke1(c_ke1),
 		.c_ke2(c_ke2),
 		.c_kxor(c_kxor),
+		.c_resetrc(c_resetrc),
 		.c_ikxor(c_ikxor),
 		.c_dec192_keysel(c_dec192_keysel),
 		.c_add(c_add),
@@ -75,6 +77,7 @@ module AesTop (
 		.c_ke1(c_ke1),
 		.c_ke2(c_ke2),
 		.c_kxor(c_kxor),
+		.c_resetrc(c_resetrc),
 		.c_ikxor(c_ikxor),
 		.c_dec192_keysel(c_dec192_keysel),
 		.c_add(c_add),

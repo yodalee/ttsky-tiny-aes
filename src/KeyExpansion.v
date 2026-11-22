@@ -9,6 +9,7 @@ module KeyExpansion (
 	c_ke1,
 	c_ke2,
 	c_kxor,
+	c_resetrc,
 	c_ikxor,
 	c_dec192_keysel,
 	i_key,
@@ -21,7 +22,7 @@ module KeyExpansion (
 );
 	input clk;
 	input rst_n;
-	input r_dec;
+	input [1:0] r_dec;
 	input [1:0] r_level;
 	input c_en;
 	input c_loadkey;
@@ -29,6 +30,7 @@ module KeyExpansion (
 	input c_ke1;
 	input c_ke2;
 	input c_kxor;
+	input c_resetrc;
 	input [4:0] c_ikxor;
 	input [1:0] c_dec192_keysel;
 	input wire signed [7:0] i_key;
@@ -40,7 +42,7 @@ module KeyExpansion (
 	output wire signed [7:0] o_key71;
 	wire en;
 	assign en = (c_en | c_kxor) | (|c_ikxor);
-	reg [7:0] c_rc_idx;
+	reg [4:0] c_rc_idx;
 	wire signed [7:0] rc_data;
 	wire is128;
 	wire is192;
@@ -51,22 +53,24 @@ module KeyExpansion (
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n)
 			c_rc_idx <= 1'sb0;
+		else if (c_resetrc)
+			case (r_level)
+				kLevel128: c_rc_idx <= 5'd22;
+				kLevel192: c_rc_idx <= 5'd24;
+				default: c_rc_idx <= 5'd25;
+			endcase
 		else if (c_loadkey) begin
-			if (r_dec)
+			if (r_dec == 2'b10)
 				case (r_level)
-					kLevel128: c_rc_idx <= 8'd9;
-					kLevel192: c_rc_idx <= 8'd7;
-					default: c_rc_idx <= 8'd6;
+					kLevel128: c_rc_idx <= 5'd22;
+					kLevel192: c_rc_idx <= 5'd24;
+					default: c_rc_idx <= 5'd25;
 				endcase
 			else
 				c_rc_idx <= 1'sb0;
 		end
-		else if (c_ke0) begin
-			if (r_dec)
-				c_rc_idx <= c_rc_idx - 8'd1;
-			else
-				c_rc_idx <= c_rc_idx + 8'd1;
-		end
+		else if (c_ke0)
+			c_rc_idx <= c_rc_idx + 5'd1;
 	RcLUT i_rc_lut(
 		.i_data(c_rc_idx),
 		.o_data(rc_data)
