@@ -60,6 +60,6 @@ module tt_um_yodalee_tinyaes (
   assign uio_oe = {8{o_valid}};
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{ena, ui_in[7], ui_in[3:2]};
+  wire _unused = &{ena, ui_in[3:2]};
 
 endmodule
