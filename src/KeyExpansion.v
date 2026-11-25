@@ -52,7 +52,7 @@ module KeyExpansion (
 	assign is192 = r_level == kLevel192;
 	always @(posedge clk or negedge rst_n)
 		if (!rst_n)
-			c_rc_idx <= 1'sb0;
+			c_rc_idx <= 5'sb0;
 		else if (c_resetrc)
 			case (r_level)
 				kLevel128: c_rc_idx <= 5'd22;
@@ -67,7 +67,7 @@ module KeyExpansion (
 					default: c_rc_idx <= 5'd25;
 				endcase
 			else
-				c_rc_idx <= 1'sb0;
+				c_rc_idx <= 5'sb0;
 		end
 		else if (c_ke0)
 			c_rc_idx <= c_rc_idx + 5'd1;
